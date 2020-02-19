@@ -1,2 +1,2 @@
 # slient_install_oracle11g
-centos静默安装oracle11g脚本
+centos7静默安装oracle11g脚本

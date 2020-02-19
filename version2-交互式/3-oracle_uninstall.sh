@@ -44,7 +44,7 @@ if [ ! $cnt -eq 0 ]; then
   groupdel dba
 fi
 
-cd /root/oracle_install_pkg
+
 if [ -f backup/sysctl.conf -a -f backup/limits.conf -a -f backup/login -a -f backup/profile ]; then
   \cp -rf backup/sysctl.conf /etc/sysctl.conf          
   \cp -rf backup/limits.conf /etc/security/limits.conf 

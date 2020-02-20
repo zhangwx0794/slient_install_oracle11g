@@ -142,7 +142,7 @@ else
   cp CentOS-Base.repo /etc/yum.repos.d/
   yum clean all
   yum makecache
-  yum -y install binutils compat-libstdc++-33 elfutils-libelf elfutils-libelf-devel gcc gcc-c++ glibc-common glibc-devel glibc-headers ksh libaio libaio-devel libgcc libstdc++ libstdc++-devel make sysstat unixODBC unixODBC-devel expect
+  yum -y install gcc gcc-c++ make binutils compat-libstdc++-33 elfutils-libelf elfutils-libelf-devel elfutils-libelf-devel-static glibc glibc-common glibc-devel ksh libaio libaio-devel libgcc libstdc++ libstdc++-devel numactl-devel sysstat unixODBC unixODBC-devel kernelheaders ksh pcre-devel readline rlwrap
   echo -e "\033[1;1;5m 1.完成yum在线安装oracle依赖组件 \033[0m"
   
   #还原yum文件/etc/yum.repos.d/

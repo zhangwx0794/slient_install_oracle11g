@@ -1,5 +1,5 @@
 #! /bin/bash
-
+workdir=$PWD
 source /etc/profile
 #-----------------------------------------------------------------
 #                          参数设置-开始
@@ -63,6 +63,33 @@ cus_fast_recovery_area=$oracle_install_dir/app/oracle/fast_recovery_area
 
 #设置oracle dataLocation
 cus_oracle_dataLocation=$oracle_install_dir/app/oracle/oradata 
+
+#获取本机IP地址
+while ((1))
+do
+read -p "oracle设置监听地址需要，请输入本机IP地址: " ip_addr
+if [[ -z $ip_addr ]]; then
+  echo "您的输入为空，请重新输入！"
+else
+  cnt=`echo $ip_addr.|egrep '^[1-9]{1,3}.([0-9]{1,3}.){3}$'|wc -l`
+  if [ $cnt -eq 0 ]; then
+    echo "您输入的IP地址不符合IP地址规范，请重新输入！"
+  else
+    cnt=`ifconfig |grep $ip_addr|wc -l`
+    if [ $cnt -eq 0 ]; then
+      echo "本机不存在该IP地址，请重新输入！"
+    else
+      break;
+    fi
+  fi
+fi
+done
+
+read -p "oracle设置监听地址需要，请输入oracle监听端口（默认：1521）: " listen_port
+if [[ -z $listen_port ]]; then
+  listen_port=1521
+fi  
+
 
 #设置oracle数据库sys/system等用户密码
 while ((1))
@@ -244,7 +271,7 @@ done
 
 #判断flag是否等于1，是则执行卸载脚本
 if [ $flag -eq 1 ]; then
-  sudo /root/oracle_install_pkg/3-uninstall.sh
+  sudo $workdir/3-uninstall.sh
   echo -e "\033[1;1;5m !!!数据库安装失败，已卸载回退!!! \033[0m"
   exit
 fi
@@ -252,6 +279,7 @@ fi
 
 
 #使用root用户执行root.sh（使用expect实现在不切换用户的情况下使用root用户执行命令）
+sudo $oracle_install_dir/app/oracle/oraInventory/orainstRoot.sh
 sudo $oracle_install_dir/app/oracle/product/11.2.0/db_1/root.sh
 echo -e "\033[1;1;5m 成功执行$oracle_install_dir/app/oracle/product/11.2.0/db_1/root.sh \033[0m"
 
@@ -282,6 +310,22 @@ source /home/oracle/.bash_profile
 echo -e "\033[1;1;5m 设置oracle环境变量完毕 \033[0m"
 
 sleep 1s
+
+# 修改默认端口为listen_port
+
+cat << EOF > /tmp/alter_oracle_listen_port.sql
+alter system set local_listener='(ADDRESS=(PROTOCOL=TCP)(HOST=${ip_addr})(PORT=${listen_port}))';
+exit 0;
+EOF
+
+sqlplus sys/$cus_oracledb_user_pwd as sysdba @/tmp/alter_oracle_listen_port.sql
+
+lsnrctl stop
+sleep 5s
+sed -i 's/(HOST = .*)(PORT = .*))/(HOST = '"${ip_addr}"')(PORT = '"${listen_port}"'))/g' $ORACLE_HOME/network/admin/listener.ora
+sed -i 's/(HOST = .*)(PORT = .*))/(HOST = '"${ip_addr}"')(PORT = '"${listen_port}"'))/g' $ORACLE_HOME/network/admin/tnsnames.ora
+lsnrctl start
+echo "默认端口已修改为${listen_port}"
 
 #检查数据库实例是否启动成功
 cnt=`ps -ef|grep ora_smon|grep -v grep|wc -l`

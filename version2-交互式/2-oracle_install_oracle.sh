@@ -79,6 +79,7 @@ else
     if [ $cnt -eq 0 ]; then
       echo "本机不存在该IP地址，请重新输入！"
     else
+      echo "oracle数据库IP地址: $ip_addr" >> /tmp/oracle_info.txt
       break;
     fi
   fi
@@ -88,6 +89,8 @@ done
 read -p "oracle设置监听地址需要，请输入oracle监听端口（默认：1521）: " listen_port
 if [[ -z $listen_port ]]; then
   listen_port=1521
+else
+  echo "oracle数据库监听端口: $listen_port" >> /tmp/oracle_info.txt  
 fi  
 
 

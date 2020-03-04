@@ -75,7 +75,7 @@ else
   if [ $cnt -eq 0 ]; then
     echo "您输入的IP地址不符合IP地址规范，请重新输入！"
   else
-    cnt=`ifconfig |grep $ip_addr|wc -l`
+    cnt=`ifconfig|grep "inet "|grep $ip_addr|wc -l`
     if [ $cnt -eq 0 ]; then
       echo "本机不存在该IP地址，请重新输入！"
     else

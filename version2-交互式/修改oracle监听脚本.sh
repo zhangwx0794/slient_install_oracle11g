@@ -2,6 +2,20 @@
 
 source /home/oracle/.bash_profile
 cus_oracledb_user_pwd=oracle
+
+while((1))
+do
+
+read -p "oracle设置监听地址需要，请输入sys用户密码：" cus_oracledb_user_pwd
+if [[ -z $cus_oracledb_user_pwd ]]; then
+  echo "您的输入为空，请重新输入！"
+else
+  break;
+fi
+
+done
+
+
 #设置本机IP地址
 while ((1))
 do
@@ -13,7 +27,7 @@ else
   if [ $cnt -eq 0 ]; then
     echo "您输入的IP地址不符合IP地址规范，请重新输入！"
   else
-    cnt=`ifconfig |grep $ip_addr|wc -l`
+    cnt=`ifconfig|grep "inet "|grep $ip_addr|wc -l`
     if [ $cnt -eq 0 ]; then
       echo "本机不存在该IP地址，请重新输入！"
     else

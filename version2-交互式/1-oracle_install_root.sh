@@ -61,6 +61,9 @@ done
 # 自定义安装路径
 # oracle_install_dir="/u01"
 
+mkdir -p $oracle_install_dir/app
+
+
 #备份相关参数文件
 mkdir oracle_backup/
 \cp -rf /etc/sysctl.conf oracle_backup/
@@ -126,15 +129,20 @@ else
 fi
 
 #取消下面的注释强制离线安装
-#res=0
+res=0
 
 #如果不能联网那就离线安装
 if [ $res -eq 0 ]; then
   #yum离线安装oracle依赖组件 
   echo -e "\033[1;1;5m 网络异常，即将离线安装oracle依赖组件 \033[0m"
-  yum localinstall -y rpms/*.rpm > /dev/null
+  yum localinstall -y rpms/*.rpm --nogpgcheck --skip-broken > /dev/null
   echo -e "\033[1;1;5m 1.完成yum离线安装oracle依赖组件 \033[0m"
 else
+  #检查CentOS-Base.repo文件是否存在
+  if [ ! -f CentOS-Base.repo ]; then
+    echo "错误：CentOS-Base.repo文件不存在！"
+    exit 1
+  fi
   #yum在线安装oracle依赖组件
   echo -e "\033[1;1;5m 网络通畅，即将在线安装oracle依赖组件 \033[0m"
   mkdir -p /etc/yum.repos.d/bak
@@ -251,13 +259,13 @@ EOF
 source /etc/profile
 echo -e "\033[1;1;5m 9.完成/etc/profile限制修改并使限制生效 \033[0m"
 
-
-
 #创建安装目录(可根据情况，选择比较多空间的目录创建)
 mkdir -p $oracle_install_dir/app
 chown -R oracle:oinstall $oracle_install_dir/app
 chmod -R 775 $oracle_install_dir/app
-echo -e "\033[1;1;5m 10.完成oracle home目录创建 \033[0m"
+echo -e "\033[1;1;5m 完成oracle home目录创建 \033[0m"
+
+
 
 
 

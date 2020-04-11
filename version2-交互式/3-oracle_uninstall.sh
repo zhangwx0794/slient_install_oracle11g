@@ -1,6 +1,8 @@
 #! /bin/bash
+
 #卸载
 #一定要注意 ps -ef|grep -v grep|grep -v $$ ; $$（当前脚本的进程ID）
+
 
 while ((1))
 do
@@ -26,7 +28,7 @@ fi
 sleep 5s
 
 if [ -d /home/oracle/database ]; then
-  mv /home/oracle/database backup/
+  mv /home/oracle/database oracle_backup/
 fi
 
 cnt=`egrep '^oracle' /etc/passwd|wc -l`
@@ -45,11 +47,11 @@ if [ ! $cnt -eq 0 ]; then
 fi
 
 
-if [ -f backup/sysctl.conf -a -f backup/limits.conf -a -f backup/login -a -f backup/profile ]; then
-  \cp -rf backup/sysctl.conf /etc/sysctl.conf          
-  \cp -rf backup/limits.conf /etc/security/limits.conf 
-  \cp -rf backup/login       /etc/pam.d/login          
-  \cp -rf backup/profile     /etc/profile
+if [ -f oracle_backup/sysctl.conf -a -f oracle_backup/limits.conf -a -f oracle_backup/login -a -f oracle_backup/profile ]; then
+  \cp -rf oracle_backup/sysctl.conf /etc/sysctl.conf          
+  \cp -rf oracle_backup/limits.conf /etc/security/limits.conf 
+  \cp -rf oracle_backup/login       /etc/pam.d/login          
+  \cp -rf oracle_backup/profile     /etc/profile
   /sbin/sysctl -p
   source /etc/profile  
 fi  
